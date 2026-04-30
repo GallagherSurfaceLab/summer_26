@@ -21,5 +21,31 @@ A Jupyter notebook working through an example of this workflow can be opened by 
 
 There are a number of projects that can be worked on which are broken down into `Code Quality`, `Workflow`, `Analysis`, and `Validation`. A detailed overview of the project can be found on the [projects page](https://github.com/orgs/GallagherSurfaceLab/projects/1/views/1) and a summary is in the table below:
 
+|Project | Type |
+|--------|------|
+[Fix the image area calculation bug][1] | Code Quality				
+[Surpress the UserWarning in gray_process( )][2] | Code Quality				
+[Vectorize the statistics( ) function][3] | Code Quality				
+[Move area filtering from find_nodes( ) to vornoi_tree( )][4] | Workflow				
+[Investigate the Voronoi power weight parameter][5] | Workflow				
+[Test sensitivity of results to the KDTree k parameter][6] | Validation				
+[Build a synthetic hexagonal lattice test][7] | Validation				
+[Add analysis quantifying the distribution of degree and edge lengths][8] | Analysis				
+[Plot and fit the MST edge length distribution][9] | Analysis				
+[Compute the pair correlation function g(r)][10] | Analysis				
+[Compute the hexatic order parameter ψ₆][11] | Analysis				
+[Systematically Analyze a large number of images][12] | Analysis				
 
 
+[1]:https://github.com/GallagherSurfaceLab/summer_26/issues/1
+[2]:https://github.com/GallagherSurfaceLab/summer_26/issues/2
+[3]:https://github.com/GallagherSurfaceLab/summer_26/issues/3
+[4]:https://github.com/GallagherSurfaceLab/summer_26/issues/4
+[5]:https://github.com/GallagherSurfaceLab/summer_26/issues/5
+[6]:https://github.com/GallagherSurfaceLab/summer_26/issues/6
+[7]:https://github.com/GallagherSurfaceLab/summer_26/issues/7
+[8]:https://github.com/GallagherSurfaceLab/summer_26/issues/8
+[9]:https://github.com/GallagherSurfaceLab/summer_26/issues/9
+[10]:https://github.com/GallagherSurfaceLab/summer_26/issues/10
+[11]:https://github.com/GallagherSurfaceLab/summer_26/issues/11
+[12]:https://github.com/GallagherSurfaceLab/summer_26/issues/12
