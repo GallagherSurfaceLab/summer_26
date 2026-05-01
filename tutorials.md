@@ -1,32 +1,22 @@
-#### Step 1.3 — Install Git
+## Learning Python for scientific computing
  
-Git is version control software — it tracks every change you make to your code, lets you go back to previous versions, and enables collaboration.
+Work through the Python tutorials below and the [GitHub](#learning-git-and-github) section at the end. Additoinal resources are below. You do not need to finish all of them before starting the project tasks — complete the tutorials, then return to the rest as needed.
+
+## Python Tutorials
+
+The two tutorials below are GitHub repositories. You can naviage to their GitHub site, clone the repositories (Green `< > Code` button) and then work through each of the notebooks.
+
+- [Goodard Heliophysics Boot Camp](https://github.com/helio670/bootcamp)
+- [Goddar Heliophysics Data Science](https://github.com/helio670/datascience)
+
+There are a number of other tutorials that may be of use
+- [Scientific Python Lectures](https://lectures.scientific-python.org/)
+- [Kaggle intro to Python](https://www.kaggle.com/learn/python)
+- [Intro To Python](https://www.datacamp.com/courses/intro-to-python-for-data-science)
+
+
  
-- **Windows:** Download Git for Windows from [https://git-scm.com/download/win](https://git-scm.com/download/win). Accept the defaults during installation. This also installs **Git Bash**, a terminal you will use for Git commands.
-- **macOS:** Run `git --version` in Terminal. If Git is not installed, macOS will prompt you to install the Xcode Command Line Tools, which includes Git.
-- **Linux:** Run `sudo apt install git` (Ubuntu/Debian) or `sudo dnf install git` (Fedora).
-After installation, open a terminal and configure Git with your name and email (these appear in your commit history):
- 
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-```
- 
-**Learning task:** Run `git --version` and confirm it prints a version number.
- 
-#### Step 1.4 — Create a GitHub account
- 
-GitHub is a website that hosts Git repositories online. It lets you back up your code, share it with your supervisor, and collaborate.
- 
-- Sign up at [https://github.com](https://github.com). Use your university email address.
-- Apply for the **GitHub Student Developer Pack** at [https://education.github.com/pack](https://education.github.com/pack) — this gives you free access to GitHub Pro and other tools while you are a student.
----
- 
-### Part 2 — Learning Python for scientific computing
- 
-Work through these in order. Each should take 1–3 hours. You do not need to finish all of them before starting the project tasks — complete Steps 2.1–2.3 first, then return to the rest as needed.
- 
-#### Step 2.1 — Python basics (if new to Python)
+#### Python basics (if new to Python)
  
 **Resource:** The official Python tutorial, sections 3–5: [https://docs.python.org/3/tutorial/](https://docs.python.org/3/tutorial/)
  
@@ -37,7 +27,7 @@ Work through these in order. Each should take 1–3 hours. You do not need to fi
 - Importing modules with `import`
 **Learning task:** Write a function that takes a list of numbers and returns the mean and standard deviation without using NumPy (use plain Python loops). Then verify your answer matches `np.mean()` and `np.std(ddof=1)`.
  
-#### Step 2.2 — NumPy fundamentals
+#### NumPy fundamentals
  
 NumPy is the foundation of scientific Python. Almost all array operations in the STM code use it.
  
@@ -51,7 +41,7 @@ NumPy is the foundation of scientific Python. Almost all array operations in the
 - Boolean masking: `arr[arr > 0]`
 **Learning task:** Create a 2D array of shape (100, 100) filled with random values, then compute the mean of all values above 0.5 using boolean masking (without any loops).
  
-#### Step 2.3 — Matplotlib for plotting
+#### Matplotlib for plotting
  
 **Resource:** Matplotlib getting started: [https://matplotlib.org/stable/tutorials/introductory/pyplot.html](https://matplotlib.org/stable/tutorials/introductory/pyplot.html)
  
@@ -62,7 +52,7 @@ NumPy is the foundation of scientific Python. Almost all array operations in the
 - Saving figures: `plt.savefig('output.png', dpi=150)`
 **Learning task:** Plot a sine wave and a cosine wave on the same figure with a legend, axis labels, and a title. Save it to a PNG file.
  
-#### Step 2.4 — Writing and calling functions
+#### Writing and calling functions
  
 **Resource:** Real Python guide to functions: [https://realpython.com/defining-your-own-python-function/](https://realpython.com/defining-your-own-python-function/)
  
@@ -73,7 +63,7 @@ NumPy is the foundation of scientific Python. Almost all array operations in the
 - Writing docstrings (what they are and why they matter)
 **Learning task:** Write a function `summarize(data, label="data")` that takes a NumPy array and prints the min, max, mean, and standard deviation with the given label. Add a NumPy-style docstring.
  
-#### Step 2.5 — pandas for tabular data
+#### pandas for tabular data
  
 Needed for Task 5 (batch processing).
  
@@ -89,11 +79,11 @@ Needed for Task 5 (batch processing).
  
 ---
  
-### Part 3 — Learning Git and GitHub
+### Learning Git and GitHub
  
 Work through these in order. The first two are the most important and cover everything you need for day-to-day use on this project.
  
-#### Step 3.1 — Core Git concepts
+#### Core Git concepts
  
 Before using Git commands, understand what they do conceptually.
  
@@ -105,8 +95,15 @@ Before using Git commands, understand what they do conceptually.
 - **Branch:** a parallel version of your code (you will mostly work on `main`)
 - **Working directory vs staging area vs committed history:** the three states a file can be in
 **Learning task:** Read the handbook and write a one-paragraph plain-English explanation of what a commit is and why you would make one. (No code needed — this is a reading comprehension exercise.)
+
+#### Git Tutorials
+
+- [Git, GitHub, & GitHub Desktop for beginners](https://www.youtube.com/watch?v=8Dd7KRpKeaE)
+- [git - the simple guide](https://rogerdudler.github.io/git-guide/)
+- [GitHub Docs - Hello World](https://docs.github.com/en/get-started/start-your-journey/hello-world)
+- [Git and GitHub for Beginners - Crash Course](https://www.youtube.com/watch?v=RGOj5yH7evk)
  
-#### Step 3.2 — Basic Git workflow
+#### Basic Git workflow
  
 These are the commands you will use every day. Practice them until they feel natural.
  
@@ -171,7 +168,7 @@ git branch -d feature/name               # delete a branch after merging
  
 **Learning task:** Complete the first three levels of the "Introduction Sequence" on [https://learngitbranching.js.org/](https://learngitbranching.js.org/). This interactive tool shows you exactly what branching looks like visually.
  
-#### Step 3.5 — Good commit habits
+#### Good commit habits
  
 Good commit messages make your project history readable and make it easy to find when a bug was introduced.
  
@@ -199,27 +196,6 @@ feature/task-07-synthetic-lattice-test
 ```
  
 **Learning task:** For your next project task, create a branch using this naming convention, complete the task, commit with a message following the rules above, and push the branch to GitHub.
- 
----
- 
-### Part 4 — Recommended workflow for each task
- 
-Use this checklist for every task on the Kanban board:
- 
-```
-[ ] Read the task card fully before writing any code
-[ ] Pull the latest code from GitHub: git pull
-[ ] Create a new branch: git checkout -b feature/task-XX-short-description
-[ ] Read the relevant functions in stm_voronoi_mst.py before editing
-[ ] Make your changes in small steps, testing as you go
-[ ] Commit regularly (after each logical sub-step, not just at the end)
-[ ] Write or update a docstring for any function you modify
-[ ] Test your changes on the example notebook before considering the task done
-[ ] Push your branch to GitHub: git push -u origin feature/task-XX-...
-[ ] Move the card to "Done" on the Kanban board
-```
- 
----
  
 ### Quick reference — commands you will use every day
  
