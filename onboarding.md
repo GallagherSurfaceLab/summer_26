@@ -381,7 +381,7 @@ unexpected order), restart the kernel and re-run everything from the top:
 
 This is the sequence you should follow at the start of every work session.
 
-### In the terminal
+### In the terminal (or open with righ click on folder `Open with Code`)
 
 ```bash
 # 1. Activate the project environment
