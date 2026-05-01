@@ -19,6 +19,16 @@ A Jupyter notebook working through an example of this workflow can be opened by 
 
 <a href="https://colab.research.google.com/github/GallagherSurfaceLab/summer_26/blob/main/STM_voronoi.ipynb" target="_blank" rel="noopener noreferrer"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 
+### Onboarding
+
+Work through the onboarding page to get what you need setup. 
+
+###  Tutorials
+
+Work through the Tutorials page. If you are not familiar with Python or Git work through the [Python Tutorials](https://lectures.scientific-python.org/) and [Git sections](/tutorials.md#git-tutorials), work through the rest as needed.
+
+### Summer Tasks
+
 There are a number of projects that can be worked on which are broken down into `Code Quality`, `Workflow`, `Analysis`, and `Validation`. A detailed overview of the project can be found on the [projects page](https://github.com/orgs/GallagherSurfaceLab/projects/1/views/1) and a summary is in the table below:
 
 |Project | Type |
@@ -27,15 +37,31 @@ There are a number of projects that can be worked on which are broken down into 
 [Surpress the UserWarning in gray_process( )][2] | Code Quality				
 [Vectorize the statistics( ) function][3] | Code Quality
 [Create a `plot_voronoi()` helper function][13] | Code Quality
+[Validate units and scale in img_file][14] | Validation
+[Build a synthetic hexagonal lattice test][7] | Validation	
+[Test sensitivity of results to the KDTree k parameter][6] | Validation		
 [Move area filtering from find_nodes( ) to vornoi_tree( )][4] | Workflow				
 [Investigate the Voronoi power weight parameter][5] | Workflow				
-[Test sensitivity of results to the KDTree k parameter][6] | Validation				
-[Build a synthetic hexagonal lattice test][7] | Validation				
 [Add analysis quantifying the distribution of degree and edge lengths][8] | Analysis				
 [Plot and fit the MST edge length distribution][9] | Analysis				
 [Compute the pair correlation function g(r)][10] | Analysis				
 [Compute the hexatic order parameter ψ₆][11] | Analysis				
-[Systematically Analyze a large number of images][12] | Analysis				
+[Systematically Analyze a large number of images][12] | Analysis
+
+
+**Use this checklist for every task on the Kanban board:**
+```
+[ ] Read the task card fully before writing any code
+[ ] Pull the latest code from GitHub: git pull
+[ ] Create a new branch: git checkout -b feature/task-XX-short-description
+[ ] Read the relevant functions in stm_voronoi_mst.py before editing
+[ ] Make your changes in small steps, testing as you go
+[ ] Commit regularly (after each logical sub-step, not just at the end)
+[ ] Write or update a docstring for any function you modify
+[ ] Test your changes on the example notebook before considering the task done
+[ ] Push your branch to GitHub: git push -u origin feature/task-XX-...
+[ ] Move the card to "Done" on the Kanban board
+```
 
 
 [1]:https://github.com/GallagherSurfaceLab/summer_26/issues/1
@@ -51,3 +77,4 @@ There are a number of projects that can be worked on which are broken down into 
 [11]:https://github.com/GallagherSurfaceLab/summer_26/issues/11
 [12]:https://github.com/GallagherSurfaceLab/summer_26/issues/12
 [13]:https://github.com/GallagherSurfaceLab/summer_26/issues/13
+[14]:https://github.com/GallagherSurfaceLab/summer_26/issues/14
