@@ -21,15 +21,15 @@ A Jupyter notebook working through an example of this workflow can be opened by 
 
 ### Onboarding
 
-Work through the onboarding page to get what you need setup. 
+Work through the [Onboarding Page](/onboarding.md) to get what you need setup. 
 
 ###  Tutorials
 
-Work through the Tutorials page. If you are not familiar with Python or Git work through the [Python Tutorials](https://lectures.scientific-python.org/) and [Git sections](/tutorials.md#git-tutorials), work through the rest as needed.
+Work through the [Tutorials page](/tutorials.md). If you are not familiar with Python or Git work through the [Python Tutorials](/tutorials.md#git-tutorials) and [Git sections](/tutorials.md#git-tutorials), work through the rest as needed.
 
 ### Summer Tasks
 
-There are a number of projects that can be worked on which are broken down into `Code Quality`, `Workflow`, `Analysis`, and `Validation`. A detailed overview of the project can be found on the [projects page](https://github.com/orgs/GallagherSurfaceLab/projects/1/views/1) and a summary is in the table below:
+There are a number of projects that can be worked on which are broken down into `Code Quality`, `Workflow`, `Analysis`, and `Validation`. A detailed overview of the project can be found on the [projects page](https://github.com/orgs/GallagherSurfaceLab/projects/1/views/1) and a summary is in the table below. Clicking on a project link will take you to a detailed description of the project:
 
 |Project | Type |
 |--------|------|
@@ -60,6 +60,7 @@ There are a number of projects that can be worked on which are broken down into 
 [ ] Write or update a docstring for any function you modify
 [ ] Test your changes on the example notebook before considering the task done
 [ ] Push your branch to GitHub: git push -u origin feature/task-XX-...
+[ ] When the task is completely finished merge the task branch with the main branch
 [ ] Move the card to "Done" on the Kanban board
 ```
 
