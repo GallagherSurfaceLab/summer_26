@@ -25,7 +25,8 @@ There are a number of projects that can be worked on which are broken down into 
 |--------|------|
 [Fix the image area calculation bug][1] | Code Quality				
 [Surpress the UserWarning in gray_process( )][2] | Code Quality				
-[Vectorize the statistics( ) function][3] | Code Quality				
+[Vectorize the statistics( ) function][3] | Code Quality
+[Create a `plot_voronoi()` helper function][13] | Code Quality
 [Move area filtering from find_nodes( ) to vornoi_tree( )][4] | Workflow				
 [Investigate the Voronoi power weight parameter][5] | Workflow				
 [Test sensitivity of results to the KDTree k parameter][6] | Validation				
@@ -49,3 +50,4 @@ There are a number of projects that can be worked on which are broken down into 
 [10]:https://github.com/GallagherSurfaceLab/summer_26/issues/10
 [11]:https://github.com/GallagherSurfaceLab/summer_26/issues/11
 [12]:https://github.com/GallagherSurfaceLab/summer_26/issues/12
+[13]:https://github.com/GallagherSurfaceLab/summer_26/issues/13
