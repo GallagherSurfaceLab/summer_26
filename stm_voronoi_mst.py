@@ -121,7 +121,8 @@ class img_file:
         self.nm_size = 1
         self.physical = False
     else:
-        self.area = self.nm_size**2 * self.px_sizex/self.px_sizex # px_sizex/px_sizex is 1. Corrected from px_sizex/px_sizex for area calculation
+        self.area = self.nm_size**2 * self.px_sizey/self.px_sizex # px_sizex/px_sizex is 1. Corrected from px_sizex/px_sizex for area calculation
+        #Changed from px_sizex/px_sizex to px_sizey/px_sizex for scale calculation
         self.scale = self.px_sizex/self.nm_size
         self.physical = True
 
