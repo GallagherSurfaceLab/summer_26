@@ -196,7 +196,7 @@ def find_nodes(mask,N,px_a_th,scale):
     return G
 
 
-def voronoi_tree(img, G, k=8, area_th=0):
+def voronoi_tree(img, G, k=8, vor_area_th=None):
     """
     Hybrid Voronoi (Power Diagram) using KDTree preselection.
 
@@ -278,18 +278,30 @@ def voronoi_tree(img, G, k=8, area_th=0):
         G.nodes[node]['area_vor'] = S[i]
 
     # ==========================================================
-    # FILTER SMALL VORONOI CELLS
+    # FILTER BY VORONOI AREA THRESHOLD
     # ==========================================================
-
-    if area_th > 0:
-        small_area_nodes = [node for node in nodelist if G.nodes[node]['area_vor'] < area_th]
-    else:
-        small_area_nodes = []
-
-    # Keep the original graph intact, but remove small cells before building the inner graph.
-    G_inner = G.copy()
-    if small_area_nodes:
-        G_inner.remove_nodes_from(small_area_nodes)
+    
+    if vor_area_th is not None:
+        # Identify nodes below threshold
+        nodes_to_remove = [node for node in G.nodes() if G.nodes[node]['area_vor'] < vor_area_th]
+        
+        if nodes_to_remove:
+            # Build KDTree of remaining nodes
+            remaining_nodes = [n for n in nodelist if n not in nodes_to_remove]
+            remaining_coords = np.array([G.nodes[n]['pixel_pos'] for n in remaining_nodes], dtype=np.float32)
+            tree_filtered = cKDTree(remaining_coords)
+            
+            # Reassign pixels from removed nodes to nearest remaining node
+            removed_mask = np.isin(mask, nodes_to_remove)
+            if np.any(removed_mask):
+                removed_pixels = np.column_stack(np.where(removed_mask))
+                _, nearest_idx = tree_filtered.query(removed_pixels)
+                for pixel, idx in zip(removed_pixels, nearest_idx):
+                    mask[pixel[0], pixel[1]] = remaining_nodes[idx]
+            
+            # Remove nodes from G
+            G.remove_nodes_from(nodes_to_remove)
+            nodelist = np.array(list(G.nodes()))
 
     # ==========================================================
     # REMOVE EDGE NODES
@@ -302,6 +314,7 @@ def voronoi_tree(img, G, k=8, area_th=0):
         ])
     )
 
+    G_inner = G.copy()
     G_inner.remove_nodes_from(edge_labels)
 
     # ==========================================================
@@ -416,6 +429,7 @@ def statistics(G,G_inner,G_MSF):
     #we can replace lines 408-9 with a single line "deg = np.mean"
     defect_ratio = [1 for n in deg_list if n!=6]
     defect_ratio = sum(defect_ratio)/N
+    #replaced the for loops in lines 409 - 415. 
     lengths = np.array([G_MSF[u][v]['dis'] for u, v, in G_MSF.edges()])
     m = np.mean(lengths)
     sig = np.std(lengths, ddof=1)
