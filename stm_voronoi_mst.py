@@ -410,12 +410,9 @@ def statistics(G,G_inner,G_MSF):
     #we can replace lines 408-9 with a single line "deg = np.mean"
     defect_ratio = [1 for n in deg_list if n!=6]
     defect_ratio = sum(defect_ratio)/N
-    for ei,ef in G_MSF.edges():
-        m = m + G_MSF[ei][ef]['dis']
-    m = m / Ne
-    for ei,ef in G_MSF.edges():
-        sig = sig + (G_MSF[ei][ef]['dis'] - m)**2
-    sig = np.sqrt(sig/(Ne-1))
+    lengths = np.array([G_MSF[u][v]['dis'] for u, v, in G_MSF.edges()])
+    m = np.mean(lengths)
+    sig = np.std(lengths, ddof=1)
     S = sum([G_inner.nodes[n]['area_vor'] for n, tmp in G_inner.nodes(data=True)])/N
     m = m / np.sqrt(S) * (N-1)/N
     sig = sig / np.sqrt(S) * (N-1)/N
