@@ -196,7 +196,7 @@ def find_nodes(mask,N,px_a_th,scale):
     return G
 
 
-def voronoi_tree(img, G, k=8):
+def voronoi_tree(img, G, k=8, area_th=0):
     """
     Hybrid Voronoi (Power Diagram) using KDTree preselection.
 
@@ -278,6 +278,20 @@ def voronoi_tree(img, G, k=8):
         G.nodes[node]['area_vor'] = S[i]
 
     # ==========================================================
+    # FILTER SMALL VORONOI CELLS
+    # ==========================================================
+
+    if area_th > 0:
+        small_area_nodes = [node for node in nodelist if G.nodes[node]['area_vor'] < area_th]
+    else:
+        small_area_nodes = []
+
+    # Keep the original graph intact, but remove small cells before building the inner graph.
+    G_inner = G.copy()
+    if small_area_nodes:
+        G_inner.remove_nodes_from(small_area_nodes)
+
+    # ==========================================================
     # REMOVE EDGE NODES
     # ==========================================================
 
@@ -288,7 +302,6 @@ def voronoi_tree(img, G, k=8):
         ])
     )
 
-    G_inner = G.copy()
     G_inner.remove_nodes_from(edge_labels)
 
     # ==========================================================
