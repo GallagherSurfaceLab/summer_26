@@ -62,7 +62,7 @@ modified code by Kyle Murphy, murphy.kyle.r@gmail.com
 
 import numpy as np
 from skimage import io, filters, morphology
-from skimage.util import img_as_float
+from skimage.util import img_as_float, img_as_ubyte
 
 from skimage import exposure, draw
 from scipy.spatial import cKDTree
@@ -155,6 +155,7 @@ def gray_process(img,dsize=25,cutoff=0.5,gain=10):
     img_gr = np.zeros_like(img[:,:,0])
     img_gr = (img[:,:,0]+img[:,:,1]+img[:,:,2])/3
     selem = morphology.disk(dsize)
+    img_gr = img_as_ubyte(img_gr)
     img_gr = filters.rank.equalize(img_gr, footprint=selem) #change for update skiimage
     img_gr = img_as_float(img_gr)
     img_gr = exposure.adjust_sigmoid(img_gr,cutoff=cutoff,gain=gain)
