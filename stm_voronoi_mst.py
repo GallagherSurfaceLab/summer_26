@@ -407,6 +407,7 @@ def statistics(G,G_inner,G_MSF):
     deg_list = []
     deg_list = [G_inner.nodes[n]['degree'] for n, tmp in G_inner.nodes(data=True)]
     deg = sum(deg_list) / N # average degree
+    #we can replace lines 408-9 with a single line "deg = np.mean"
     defect_ratio = [1 for n in deg_list if n!=6]
     defect_ratio = sum(defect_ratio)/N
     for ei,ef in G_MSF.edges():
