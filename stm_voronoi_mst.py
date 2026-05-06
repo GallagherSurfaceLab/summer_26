@@ -191,15 +191,8 @@ def find_nodes(mask,N,px_a_th,scale):
         # Gets the region center of mass, in pixel coordinates
         pcoord = np.floor(sum(region)/len(region))
         area = len(region)
-        # Selects cells above a threshold area to avoid image noise
-        cond1 = area >= px_a_th
-        width = mask.shape[1] * .05
-        edge = pcoord[0] < width or pcoord[0] > mask.shape[1] - width
-        edge = edge or pcoord[1] < width or pcoord[1] > mask.shape[1] - width
-        # Reduced area threshold if cell is at the edge of image
-        cond2 = area >= px_a_th/3 and (edge)
-        if cond1 or cond2:
-            G.add_node(ii, pixel_pos=pcoord, area=area/scale**2)
+        # Keep all nodes without area filtering
+        G.add_node(ii, pixel_pos=pcoord, area=area/scale**2)
     return G
 
 
