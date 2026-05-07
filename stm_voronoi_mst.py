@@ -70,8 +70,10 @@ from scipy.ndimage import binary_dilation
 
 import networkx as nx
 
+#if we want to pass an image through the code, we can create a class that reads the image and extracts the scale information from the filename.
+
 # Reads image files and scale information. Expected name format: "TEXTscale_XXX.extension"
-class img_file:
+class img_file:  
   """
   Represents an STM image with embedded scale metadata.
 
@@ -121,8 +123,8 @@ class img_file:
         self.nm_size = 1
         self.physical = False
     else:
+        # changed self.area before it reduced to nm_size^2 which only works for square images. Now it will work for rectangular images as well.
         self.area = self.nm_size**2 * self.px_sizey/self.px_sizex # px_sizex/px_sizex is 1. Corrected from px_sizex/px_sizex for area calculation
-        #Changed from px_sizex/px_sizex to px_sizey/px_sizex for scale calculation
         self.scale = self.px_sizex/self.nm_size
         self.physical = True
 
@@ -155,8 +157,8 @@ def gray_process(img,dsize=25,cutoff=0.5,gain=10):
     img_gr = np.zeros_like(img[:,:,0])
     img_gr = (img[:,:,0]+img[:,:,1]+img[:,:,2])/3
     selem = morphology.disk(dsize)
-    img_gr = img_as_ubyte(img_gr)
-    img_gr = filters.rank.equalize(img_gr, footprint=selem) #change for update skiimage
+    # to silence the warning we must convert the image before it passes the rank filter.
+    img_gr = filters.rank.equalize(img_as_ubyte(img_gr), footprint=selem) #change for update skiimage
     img_gr = img_as_float(img_gr)
     img_gr = exposure.adjust_sigmoid(img_gr,cutoff=cutoff,gain=gain)
     return img_gr
@@ -191,12 +193,19 @@ def find_nodes(mask,N,px_a_th,scale):
         # Gets the region center of mass, in pixel coordinates
         pcoord = np.floor(sum(region)/len(region))
         area = len(region)
-        # Keep all nodes without area filtering
+        # we want to keep all nodes without area filtering. we will filter them later bases on the voronoi area which is more accurate.
         G.add_node(ii, pixel_pos=pcoord, area=area/scale**2)
     return G
+# k is the number of nearest nodes to consider for each pixel when computing the Voronoi diagram. if we increase k, we will get a more accurate Voronoi diagram at the cost of increased computation time.
+'''
+I would recommend a k value of around 8 to 16 for most images. this should give a good balance between
+accuracy and speed. if you have a very large image with many nodes, you may want to increase k to 16
+or 32 to ensure that you are capturing the correct voronoi cells, but for smaller images with fewer
+nodes, a k value of 8 should be sufficient. the smallest k for which the results stop changing is 
+around k = 8, which is why we choose that as the default value.
 
-
-def voronoi_tree(img, G, k=8, vor_area_th=None):
+'''
+def voronoi_tree(img, G, k=8, area_th=0):
     """
     Hybrid Voronoi (Power Diagram) using KDTree preselection.
 
@@ -238,7 +247,15 @@ def voronoi_tree(img, G, k=8, vor_area_th=None):
     narea = np.array([G.nodes[n]['area'] * scale**2 for n in nodelist], dtype=np.float32)
 
     # --- Power diagram weights ---
+    '''
+    the range of power for which the results are good is around 0.2 to 0.4. below 0.2 the results are similar
+    to the unweighted voronoi diagram, and above 0.4 the results start to become worse as the weights become too
+    strong and dominate the distance calculation. this is why we choose 0.3 as the default power, as it gives a 
+    good balance between accuracy and stability.     
+
+    '''
     power = 0.3
+    # geomentrically, the weights can be thought of as "shrinking" the nodes with larger area, which makes them more likely to capture pixels that are farther away, and "expanding" the nodes with smaller area, which makes them more likely to capture pixels that are closer.
     weights = np.power(narea, power).astype(np.float32)
 
     # --- Build KDTree ---
@@ -278,30 +295,16 @@ def voronoi_tree(img, G, k=8, vor_area_th=None):
         G.nodes[node]['area_vor'] = S[i]
 
     # ==========================================================
-    # FILTER BY VORONOI AREA THRESHOLD
+    # FILTER SMALL VORONOI CELLS
     # ==========================================================
-    
-    if vor_area_th is not None:
-        # Identify nodes below threshold
-        nodes_to_remove = [node for node in G.nodes() if G.nodes[node]['area_vor'] < vor_area_th]
-        
-        if nodes_to_remove:
-            # Build KDTree of remaining nodes
-            remaining_nodes = [n for n in nodelist if n not in nodes_to_remove]
-            remaining_coords = np.array([G.nodes[n]['pixel_pos'] for n in remaining_nodes], dtype=np.float32)
-            tree_filtered = cKDTree(remaining_coords)
-            
-            # Reassign pixels from removed nodes to nearest remaining node
-            removed_mask = np.isin(mask, nodes_to_remove)
-            if np.any(removed_mask):
-                removed_pixels = np.column_stack(np.where(removed_mask))
-                _, nearest_idx = tree_filtered.query(removed_pixels)
-                for pixel, idx in zip(removed_pixels, nearest_idx):
-                    mask[pixel[0], pixel[1]] = remaining_nodes[idx]
-            
-            # Remove nodes from G
-            G.remove_nodes_from(nodes_to_remove)
-            nodelist = np.array(list(G.nodes()))
+
+    area_vor_values = np.array([S[i] for i in range(len(nodelist))])
+    area_threshold = np.percentile(area_vor_values, 10)
+
+    small_nodes = [nodelist[i] for i in range(len(nodelist)) if S[i] < area_threshold]
+
+    G_filtered = G.copy()
+    G_filtered.remove_nodes_from(small_nodes)
 
     # ==========================================================
     # REMOVE EDGE NODES
@@ -390,9 +393,8 @@ def voronoi_tree(img, G, k=8, vor_area_th=None):
     img_vor_boarder[boarder] = [0]
     img_vor_boarder[~boarder] = [np.nan]
     
-
-
-    return img_vor, img_vor_deg, img_vor_boarder, G, G_inner
+    # G is the full/original graph with all nodes and no edges. G_inner is the filtered graph with small and edge cells removed, and edges calculated.
+    return img_vor, img_vor_deg, img_vor_boarder, G, G_inner, G_filtered
 
 
 # Computes network metrics values
@@ -429,15 +431,17 @@ def statistics(G,G_inner,G_MSF):
     #we can replace lines 408-9 with a single line "deg = np.mean"
     defect_ratio = [1 for n in deg_list if n!=6]
     defect_ratio = sum(defect_ratio)/N
-    #replaced the for loops in lines 409 - 415. 
+    # extract all edge lengths into a single numpy array.
     lengths = np.array([G_MSF[u][v]['dis'] for u, v, in G_MSF.edges()])
+    # now replace the for loops with vectorized operations.
     m = np.mean(lengths)
     sig = np.std(lengths, ddof=1)
     S = sum([G_inner.nodes[n]['area_vor'] for n, tmp in G_inner.nodes(data=True)])/N
     m = m / np.sqrt(S) * (N-1)/N
     sig = sig / np.sqrt(S) * (N-1)/N
+    # statistics returneds deg_list, deg, m, std, S, and defect ratio. we want to plot m, std, and defect ratio as a function of the power to see how it affects the results.
     return deg_list, deg, m, sig, S, defect_ratio
-
+# if I want to know the values of m, std, and defect ratio for different powers, i can run the voronoi_tree function with different power values and then call the statistics function for each resulting graph. 
 # Color coding the cells by their coordination number
 def color_by_degree(deg):
     """
@@ -457,4 +461,34 @@ def color_by_degree(deg):
     elif deg < 6:
         diff = int(255*min(np.sqrt(6-deg)/2,1))
         return [0,255-diff,diff]
+    
+    '''
+import matplotlib.pyplot as plt
+from skimage import util
 
+f = r"STM_Images\1912200011.png"
+
+img = img_file(f)
+img.load()
+
+print(img.name)
+area_threshold = np.pi * 0.3**2 
+px_a_th = area_threshold * img.scale**2
+radius = int(img.scale/5)
+if radius == 0:
+    radius = 1
+
+img_gr = gray_process(img.img, dsize = 10, cutoff = 0.2)
+
+fig, axes = plt.subplots(nrows = 1, ncols =2, figsize = (11, 6))
+im0 = axes[0].imshow(img_gr, cmap = 'gray')
+axes[0].set_title('Gray ScaleImage')
+im1 = axes[1].imshow(util.invert(img_gr), cmap = 'gray')
+axes[1].set_title('Inverted Gray Scale Image')
+
+fig.colorbar(im0, ax = axes[0], shrink = 0.6)
+fig.colorbar(im1, ax = axes[1], shrink = 0.6)
+
+plt.tight_layout()
+plt.show()
+'''
