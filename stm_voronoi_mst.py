@@ -461,34 +461,4 @@ def color_by_degree(deg):
     elif deg < 6:
         diff = int(255*min(np.sqrt(6-deg)/2,1))
         return [0,255-diff,diff]
-    
-    '''
-import matplotlib.pyplot as plt
-from skimage import util
-
-f = r"STM_Images\1912200011.png"
-
-img = img_file(f)
-img.load()
-
-print(img.name)
-area_threshold = np.pi * 0.3**2 
-px_a_th = area_threshold * img.scale**2
-radius = int(img.scale/5)
-if radius == 0:
-    radius = 1
-
-img_gr = gray_process(img.img, dsize = 10, cutoff = 0.2)
-
-fig, axes = plt.subplots(nrows = 1, ncols =2, figsize = (11, 6))
-im0 = axes[0].imshow(img_gr, cmap = 'gray')
-axes[0].set_title('Gray ScaleImage')
-im1 = axes[1].imshow(util.invert(img_gr), cmap = 'gray')
-axes[1].set_title('Inverted Gray Scale Image')
-
-fig.colorbar(im0, ax = axes[0], shrink = 0.6)
-fig.colorbar(im1, ax = axes[1], shrink = 0.6)
-
-plt.tight_layout()
-plt.show()
-'''
+ 
