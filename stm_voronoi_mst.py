@@ -197,14 +197,7 @@ def find_nodes(mask,N,px_a_th,scale):
         G.add_node(ii, pixel_pos=pcoord, area=area/scale**2)
     return G
 # k is the number of nearest nodes to consider for each pixel when computing the Voronoi diagram. if we increase k, we will get a more accurate Voronoi diagram at the cost of increased computation time.
-'''
-I would recommend a k value of around 8 to 16 for most images. this should give a good balance between
-accuracy and speed. if you have a very large image with many nodes, you may want to increase k to 16
-or 32 to ensure that you are capturing the correct voronoi cells, but for smaller images with fewer
-nodes, a k value of 8 should be sufficient. the smallest k for which the results stop changing is 
-around k = 8, which is why we choose that as the default value.
 
-'''
 def voronoi_tree(img, G, k=8, area_th=0):
     """
     Hybrid Voronoi (Power Diagram) using KDTree preselection.
@@ -247,13 +240,7 @@ def voronoi_tree(img, G, k=8, area_th=0):
     narea = np.array([G.nodes[n]['area'] * scale**2 for n in nodelist], dtype=np.float32)
 
     # --- Power diagram weights ---
-    '''
-    the range of power for which the results are good is around 0.2 to 0.4. below 0.2 the results are similar
-    to the unweighted voronoi diagram, and above 0.4 the results start to become worse as the weights become too
-    strong and dominate the distance calculation. this is why we choose 0.3 as the default power, as it gives a 
-    good balance between accuracy and stability.     
 
-    '''
     power = 0.3
     # geomentrically, the weights can be thought of as "shrinking" the nodes with larger area, which makes them more likely to capture pixels that are farther away, and "expanding" the nodes with smaller area, which makes them more likely to capture pixels that are closer.
     weights = np.power(narea, power).astype(np.float32)
