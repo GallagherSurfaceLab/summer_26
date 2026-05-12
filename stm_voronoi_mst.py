@@ -191,16 +191,8 @@ def find_nodes(mask,N,px_a_th,scale):
         # Gets the region center of mass, in pixel coordinates
         pcoord = np.floor(sum(region)/len(region))
         area = len(region)
-        # Selects cells above a threshold area to avoid image noise
-        cond1 = area >= px_a_th
-        width = mask.shape[1] * .05
-        edge = pcoord[0] < width or pcoord[0] > mask.shape[1] - width
-        edge = edge or pcoord[1] < width or pcoord[1] > mask.shape[1] - width
-        # Reduced area threshold if cell is at the edge of image
-        cond2 = area >= px_a_th/3 and (edge)
-        if cond1 or cond2:
-            G.add_node(ii, pixel_pos=pcoord, area=area/scale**2)
-
+        # Moved the filtering step to voronoi_tree()
+        G.add_node(ii, pixel_pos=pcoord, area=area/scale**2)
     return G
 
 
@@ -284,6 +276,18 @@ def voronoi_tree(img, G, k=8):
 
     for i, node in enumerate(nodelist):
         G.nodes[node]['area_vor'] = S[i]
+
+    # ==========================================================
+    # VORONOI FILTERING (ADDED)
+    # ==========================================================
+    
+    area_vor = np.array([S[i] for i in range(len(nodelist))])
+    area_threshold = np.perentile(area_vor, 10)
+
+    small_nodes = [nodelist[i] for i in range(len(nodelist)) if S < area_threshold]
+
+    G.filter = G.copy()
+    G.filter.remove_nodes_from(small_nodes)
 
     # ==========================================================
     # REMOVE EDGE NODES
@@ -372,8 +376,6 @@ def voronoi_tree(img, G, k=8):
     img_vor_boarder[boarder] = [0]
     img_vor_boarder[~boarder] = [np.nan]
     
-
-
     return img_vor, img_vor_deg, img_vor_boarder, G, G_inner
 
 
@@ -410,8 +412,8 @@ def statistics(G,G_inner,G_MSF):
     deg = sum(deg_list) / N # average degree
     defect_ratio = [1 for n in deg_list if n!=6]
     length = np.array([G[u][v]['dis'] for u, v in G.edges()])
-    m = np.mean(m)
-    std = np.std(ddof = 1)
+    m = np.mean(length)
+    sig = np.std(length, ddof = 1)
     S = sum([G_inner.nodes[n]['area_vor'] for n, tmp in G_inner.nodes(data=True)])/N
     m = m / np.sqrt(S) * (N-1)/N
     sig = sig / np.sqrt(S) * (N-1)/N
