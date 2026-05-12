@@ -62,7 +62,7 @@ modified code by Kyle Murphy, murphy.kyle.r@gmail.com
 
 import numpy as np
 from skimage import io, filters, morphology
-from skimage.util import img_as_float
+from skimage.util import img_as_float, img_as_ubyte
 
 from skimage import exposure, draw
 from scipy.spatial import cKDTree
@@ -121,7 +121,8 @@ class img_file:
         self.nm_size = 1
         self.physical = False
     else:
-        self.area = self.nm_size**2 * self.px_sizex/self.px_sizex # px_sizex/px_sizex is 1. Corrected from px_sizex/px_sizex for area calculation
+        # --- Fixed area calculation bug ---
+        self.area = self.nm_size**2 * self.px_sizey/self.px_sizex
         self.scale = self.px_sizex/self.nm_size
         self.physical = True
 
@@ -154,6 +155,7 @@ def gray_process(img,dsize=25,cutoff=0.5,gain=10):
     img_gr = np.zeros_like(img[:,:,0])
     img_gr = (img[:,:,0]+img[:,:,1]+img[:,:,2])/3
     selem = morphology.disk(dsize)
+    img_gr = img_as_ubyte(img_gr)
     img_gr = filters.rank.equalize(img_gr, footprint=selem) #change for update skiimage
     img_gr = img_as_float(img_gr)
     img_gr = exposure.adjust_sigmoid(img_gr,cutoff=cutoff,gain=gain)
@@ -407,13 +409,9 @@ def statistics(G,G_inner,G_MSF):
     deg_list = [G_inner.nodes[n]['degree'] for n, tmp in G_inner.nodes(data=True)]
     deg = sum(deg_list) / N # average degree
     defect_ratio = [1 for n in deg_list if n!=6]
-    defect_ratio = sum(defect_ratio)/N
-    for ei,ef in G_MSF.edges():
-        m = m + G_MSF[ei][ef]['dis']
-    m = m / Ne
-    for ei,ef in G_MSF.edges():
-        sig = sig + (G_MSF[ei][ef]['dis'] - m)**2
-    sig = np.sqrt(sig/(Ne-1))
+    length = np.array([G[u][v]['dis'] for u, v in G.edges()])
+    m = np.mean(m)
+    std = np.std(ddof = 1)
     S = sum([G_inner.nodes[n]['area_vor'] for n, tmp in G_inner.nodes(data=True)])/N
     m = m / np.sqrt(S) * (N-1)/N
     sig = sig / np.sqrt(S) * (N-1)/N
