@@ -415,8 +415,6 @@ def statistics(G,G_inner,G_MSF):
     m = np.mean(length)
     sig = np.std(length, ddof = 1)
     S = sum([G_inner.nodes[n]['area_vor'] for n, tmp in G_inner.nodes(data=True)])/N
-    m = m / np.sqrt(S) * (N-1)/N
-    sig = sig / np.sqrt(S) * (N-1)/N
     return deg_list, deg, m, sig, S, defect_ratio
 
 # Color coding the cells by their coordination number
