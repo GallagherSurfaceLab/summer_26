@@ -196,7 +196,7 @@ def find_nodes(mask,N,px_a_th,scale):
     return G
 
 
-def voronoi_tree(img, G, k=8, power = 0):
+def voronoi_tree(img, G, k=0, power = 0):
     """
     Hybrid Voronoi (Power Diagram) using KDTree preselection.
 
@@ -249,6 +249,7 @@ def voronoi_tree(img, G, k=8, power = 0):
     pts = np.c_[yy.ravel(), xx.ravel()].astype(np.float32)
 
     # --- KDTree preselection ---
+    k_1 = k
     _, nn = tree.query(pts, k=k)  # (num_pixels, k)
 
     # --- Gather candidate nodes ---
@@ -376,7 +377,7 @@ def voronoi_tree(img, G, k=8, power = 0):
     img_vor_boarder[boarder] = [0]
     img_vor_boarder[~boarder] = [np.nan]
     
-    return img_vor, img_vor_deg, img_vor_boarder, G, G_inner, p
+    return img_vor, img_vor_deg, img_vor_boarder, G, G_inner, p, k_1
 
 
 # Computes network metrics values
