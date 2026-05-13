@@ -196,7 +196,7 @@ def find_nodes(mask,N,px_a_th,scale):
     return G
 
 
-def voronoi_tree(img, G, k=8):
+def voronoi_tree(img, G, k=8, power = 0):
     """
     Hybrid Voronoi (Power Diagram) using KDTree preselection.
 
@@ -238,7 +238,7 @@ def voronoi_tree(img, G, k=8):
     narea = np.array([G.nodes[n]['area'] * scale**2 for n in nodelist], dtype=np.float32)
 
     # --- Power diagram weights ---
-    power = 0.3
+    p = power
     weights = np.power(narea, power).astype(np.float32)
 
     # --- Build KDTree ---
@@ -280,7 +280,7 @@ def voronoi_tree(img, G, k=8):
     # ==========================================================
     # VORONOI FILTERING (ADDED)
     # ==========================================================
-    
+    '''
     area_vor = np.array([S[i] for i in range(len(nodelist))])
     area_threshold = np.perentile(area_vor, 10)
 
@@ -288,7 +288,7 @@ def voronoi_tree(img, G, k=8):
 
     G.filter = G.copy()
     G.filter.remove_nodes_from(small_nodes)
-
+'''
     # ==========================================================
     # REMOVE EDGE NODES
     # ==========================================================
@@ -376,7 +376,7 @@ def voronoi_tree(img, G, k=8):
     img_vor_boarder[boarder] = [0]
     img_vor_boarder[~boarder] = [np.nan]
     
-    return img_vor, img_vor_deg, img_vor_boarder, G, G_inner
+    return img_vor, img_vor_deg, img_vor_boarder, G, G_inner, p
 
 
 # Computes network metrics values
@@ -411,11 +411,11 @@ def statistics(G,G_inner,G_MSF):
     deg_list = [G_inner.nodes[n]['degree'] for n, tmp in G_inner.nodes(data=True)]
     deg = sum(deg_list) / N # average degree
     defect_ratio = [1 for n in deg_list if n!=6]
-    length = np.array([G[u][v]['dis'] for u, v in G.edges()])
-    m = np.mean(length)
-    sig = np.std(length, ddof = 1)
     S = sum([G_inner.nodes[n]['area_vor'] for n, tmp in G_inner.nodes(data=True)])/N
-    return deg_list, deg, m, sig, S, defect_ratio
+    length = np.array([G_MSF[u][v]['dis'] for u, v in G_MSF.edges()])
+    m = np.mean(length)
+    sig = np.std(length, ddof = 1) 
+    return deg_list, deg, m, sig, S, len(defect_ratio) / len(deg_list)
 
 # Color coding the cells by their coordination number
 def color_by_degree(deg):
