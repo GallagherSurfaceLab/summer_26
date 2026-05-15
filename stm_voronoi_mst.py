@@ -379,7 +379,6 @@ def voronoi_tree(img, G, k=0, power = 0):
     
     return img_vor, img_vor_deg, img_vor_boarder, G, G_inner, p, k_1
 
-
 # Computes network metrics values
 def statistics(G,G_inner,G_MSF):
     """
@@ -412,12 +411,19 @@ def statistics(G,G_inner,G_MSF):
     deg_list = [G_inner.nodes[n]['degree'] for n, tmp in G_inner.nodes(data=True)]
     deg = sum(deg_list) / N # average degree
     defect_ratio = [1 for n in deg_list if n!=6]
+    defect_ratio = sum(defect_ratio)/N
+    for ei,ef in G_MSF.edges():
+        m = m + G_MSF[ei][ef]['dis']
+    m = m / Ne
+    for ei,ef in G_MSF.edges():
+        sig = sig + (G_MSF[ei][ef]['dis'] - m)**2
+    sig = np.sqrt(sig/(Ne-1))
     S = sum([G_inner.nodes[n]['area_vor'] for n, tmp in G_inner.nodes(data=True)])/N
-    length = np.array([G_MSF[u][v]['dis'] for u, v in G_MSF.edges()])
-    m = np.mean(length)
-    sig = np.std(length, ddof = 1) 
-    return deg_list, deg, m, sig, S, len(defect_ratio) / len(deg_list)
+    m = m / np.sqrt(S) * (N-1)/N
+    sig = sig / np.sqrt(S) * (N-1)/N
+    return deg_list, deg, m, sig, S, defect_ratio
 
+    
 # Color coding the cells by their coordination number
 def color_by_degree(deg):
     """
