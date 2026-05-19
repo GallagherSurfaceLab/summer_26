@@ -196,7 +196,7 @@ def find_nodes(mask,N,px_a_th,scale):
     return G
 
 
-def voronoi_tree(img, G, k=0, power = 0):
+def voronoi_tree(img, G, k, power):
     """
     Hybrid Voronoi (Power Diagram) using KDTree preselection.
 
@@ -293,14 +293,20 @@ def voronoi_tree(img, G, k=0, power = 0):
     # ==========================================================
     # REMOVE EDGE NODES
     # ==========================================================
-
+    '''
     edge_labels = np.unique(
         np.concatenate([
             mask[0, :], mask[-1, :],
             mask[:, 0], mask[:, -1]
         ])
     )
-
+'''
+    edge_labels = np.unique(
+        np.concatenate([
+            mask[0, :], mask[0, :],
+            mask[:, 0], mask[:, 0]
+        ])
+    )
     G_inner = G.copy()
     G_inner.remove_nodes_from(edge_labels)
 
