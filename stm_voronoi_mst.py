@@ -303,8 +303,8 @@ def voronoi_tree(img, G, k, power):
 '''
     edge_labels = np.unique(
         np.concatenate([
-            mask[0, :], mask[0, :],
-            mask[:, 0], mask[:, 0]
+            mask[0, :], mask[-1, :],
+            mask[:, 0], mask[:, -1]
         ])
     )
     G_inner = G.copy()
