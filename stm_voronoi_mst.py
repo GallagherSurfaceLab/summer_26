@@ -292,7 +292,7 @@ def voronoi_tree(img, G, k, power):
     G_inner.remove_nodes_from(edge_labels)
 
 
-    area_threshold = np.pi * (scale/5)**2
+    area_threshold = np.pi * 7 *(scale/5)**2
     small_nodes = [n for n in G_inner.nodes() if G_inner.nodes[n]['area_vor'] < area_threshold]
     G_inner.remove_nodes_from(small_nodes)
     # ==========================================================
