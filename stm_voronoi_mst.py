@@ -162,11 +162,11 @@ def gray_process(img,dsize=25,cutoff=0.5,gain=10):
     return img_gr
 
 # Populates the network with nodes
-def find_nodes(mask,N,px_a_th,scale):
+def find_nodes(mask, N, px_a_th=None, scale=1, min_dist=None):
     """
     Convert segmented regions into graph nodes.
 
-    Filters out small/noisy regions.
+    Filters out small/noisy or spatially redundant regions.
 
     Parameters
     ----------
@@ -174,26 +174,57 @@ def find_nodes(mask,N,px_a_th,scale):
         Labeled segmentation mask
     N : int
         Number of labels
-    px_a_th : float
-        Area threshold (pixels)
+    px_a_th : float, optional
+        Area threshold (pixels). If provided, regions smaller than this are removed.
     scale : float
         Pixel-to-nm conversion
+    min_dist : float, optional
+        Minimum pixel distance between output nodes. When set, nodes are selected so
+        no two final nodes are closer than this distance.
 
     Returns
     -------
     G : networkx.Graph
         Graph with nodes representing regions
+    n : int
+        Number of nodes retained
     """
-    G = nx.Graph()
-    for ii in range (1,N+1):
-        # Gets the points for each label
-        region = np.column_stack(np.where(mask==ii))
-        # Gets the region center of mass, in pixel coordinates
-        pcoord = np.floor(sum(region)/len(region))
+    regions = []
+    for ii in range(1, N+1):
+        region = np.column_stack(np.where(mask == ii))
+        if len(region) == 0:
+            continue
+        pcoord = np.floor(np.mean(region, axis=0))
         area = len(region)
-        
-        G.add_node(ii, pixel_pos=pcoord, area=area/scale**2)
-        n = N
+        regions.append((ii, region, pcoord, area))
+
+    if min_dist is not None:
+        regions.sort(key=lambda item: item[3], reverse=True)
+        selected = []
+        selected_coords = []
+        for ii, region, pcoord, area in regions:
+            if all(np.linalg.norm(pcoord - coord) >= min_dist for coord in selected_coords):
+                selected.append((ii, region, pcoord, area))
+                selected_coords.append(pcoord)
+        regions = selected
+
+    G = nx.Graph()
+    for ii, region, pcoord, area in regions:
+        width = mask.shape[1] * 0.05
+        edge = pcoord[0] < width or pcoord[0] > mask.shape[1] - width
+        edge = edge or pcoord[1] < width or pcoord[1] > mask.shape[1] - width
+
+        if px_a_th is None:
+            cond1 = True
+            cond2 = True
+        else:
+            cond1 = area >= px_a_th
+            cond2 = area >= px_a_th / 3 and edge
+
+        if cond1 or cond2:
+            G.add_node(ii, pixel_pos=pcoord, area=area / scale ** 2)
+
+    n = G.number_of_nodes()
     return G, n
 
 
@@ -291,10 +322,11 @@ def voronoi_tree(img, G, k, power):
     G_inner = G.copy()
     G_inner.remove_nodes_from(edge_labels)
 
-
+    '''
     area_threshold = np.pi * 7 *(scale/5)**2
     small_nodes = [n for n in G_inner.nodes() if G_inner.nodes[n]['area_vor'] < area_threshold]
     G_inner.remove_nodes_from(small_nodes)
+    '''
     # ==========================================================
     # BUILD ADJACENCY (VECTOR SHIFT METHOD)
     # ==========================================================
