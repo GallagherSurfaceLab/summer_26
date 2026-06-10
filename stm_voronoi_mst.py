@@ -191,14 +191,8 @@ def find_nodes(mask,N,px_a_th,scale):
         # Gets the region center of mass, in pixel coordinates
         pcoord = np.floor(sum(region)/len(region))
         area = len(region)
-        cond1 = area >= px_a_th
-        width = mask.shape[1] * .05
-        edge = pcoord[0] < width or pcoord[0] > mask.shape[1] - width
-        edge = edge or pcoord[1] < width or pcoord[1] > mask.shape[1] - width
-        # Reduced area threshold if cell is at the edge of image
-        cond2 = area >= px_a_th/3 and (edge)
-        if cond1 or cond2:
-            G.add_node(ii, pixel_pos=pcoord, area=area/scale**2)
+        
+        G.add_node(ii, pixel_pos=pcoord, area=area/scale**2)
         n = N
     return G, n
 
@@ -296,12 +290,11 @@ def voronoi_tree(img, G, k, power):
     )
     G_inner = G.copy()
     G_inner.remove_nodes_from(edge_labels)
-    '''
+
 
     area_threshold = np.pi * (scale/5)**2
     small_nodes = [n for n in G_inner.nodes() if G_inner.nodes[n]['area_vor'] < area_threshold]
     G_inner.remove_nodes_from(small_nodes)
-'''
     # ==========================================================
     # BUILD ADJACENCY (VECTOR SHIFT METHOD)
     # ==========================================================
