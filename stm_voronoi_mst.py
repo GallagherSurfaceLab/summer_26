@@ -230,28 +230,7 @@ def find_nodes(mask, N, px_a_th=None, scale=1, min_dist=None):
 
 # Build graph nodes directly from detected peak coordinates
 def graph_from_peaks(peaks, scale=1, min_dist=None, area=None):
-    """
-    Convert peak coordinates into graph nodes.
-
-    Parameters
-    ----------
-    peaks : array-like
-        Array of peak coordinates as (row, col) pairs.
-    scale : float
-        Pixel-to-nm conversion ratio.
-    min_dist : float, optional
-        Minimum allowed pixel distance between output nodes.
-    area : float, optional
-        Physical area assigned to every node (nm^2). If None, defaults to 1 pixel^2.
-
-    Returns
-    -------
-    G : networkx.Graph
-        Graph with nodes at peak locations.
-    """
     peaks = np.asarray(peaks, dtype=np.float32)
-    if peaks.ndim != 2 or peaks.shape[1] != 2:
-        raise ValueError('peaks must be an array of shape (N, 2)')
 
     if area is None:
         area = 1.0 / scale**2
