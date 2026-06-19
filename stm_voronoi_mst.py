@@ -228,27 +228,14 @@ def find_nodes(mask, N, px_a_th=None, scale=1, min_dist=None):
     return G, n
 
 
-# Build graph nodes directly from detected peak coordinates
-def graph_from_peaks(peaks, scale=1, min_dist=None, area=None):
-    peaks = np.asarray(peaks, dtype=np.float32)
+'''
+deg_list, _, m, sig, _, defect_ratio = statistics(graph_node, graph_inner, g_msf)
 
-    if area is None:
-        area = 1.0 / scale ** 2
+lenghts = np.array([G[u][v]['dis'] for u, v in G.edges()])
+areas = [graph_inner.nodes[n]['area_vor'] for n in graph_inner.nodes()]
+mean_area = np.mean(areas)
 
-    if min_dist is not None:
-        keep = []
-        for peak in peaks:
-            if all(np.linalg.norm(peak - kept) >= min_dist for kept in keep):
-                keep.append(peak)
-        peaks = np.asarray(keep, dtype=np.float32)
-
-    G = nx.Graph()
-    for idx, pos in enumerate(peaks, start=1):
-        G.add_node(idx, pixel_pos=pos, area=area)
-
-    n = G.number_of_nodes
-    return G, n
-
+'''
 
 def voronoi_tree(img, G, k, power):
     """
