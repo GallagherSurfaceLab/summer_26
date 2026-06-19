@@ -233,7 +233,7 @@ def graph_from_peaks(peaks, scale=1, min_dist=None, area=None):
     peaks = np.asarray(peaks, dtype=np.float32)
 
     if area is None:
-        area = 1.0 / scale**2
+        area = 1.0 / scale ** 2
 
     if min_dist is not None:
         keep = []
